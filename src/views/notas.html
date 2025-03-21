@@ -16,21 +16,32 @@
 
 <body>
     <div class="container">
-        
-       
+        <section class="novaNota"></section>
+            <h1>Nova nota</h1>
+                <form>
+                    <input type="text" placeholder="Escreva sua nota aqui..." required>
+                        <h2>Escolha a cor</h2>
+                     <select>
+                        <option value="amarelo">amarelo</option>
+                        <option value="azul">azul</option>
+                        <option value="verde">verde</option>
+                        <option value="rosa">rosa</option>
+                        <option value="laranja">laranja</option>
+                    </select>
+               <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+
+
+
     </div>
 
-    <footer>
-        <p id="dataAtual"></p>
-        <img src="../public/img/dboff.png" alt="icone banco de dados" id="iconeDB">
-    </footer>
 
     <!-- Bootstrap -->
     <!--script src="../public/js/bootstrap.min.js"></script-->
 
     <!-- Processo de renderização -->
-    <script src="renderer.js"></script>
-    <script src="rendererSobre.js"></script>
+    <script src="rendererNota.js"></script>
+
 </body>
 
 </html>

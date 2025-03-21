@@ -1,24 +1,26 @@
 {
   "name": "sticknotes",
   "version": "1.0.0",
-  "description": "Projeto de notas adesivas (estilo post-it) usando o framework Electron.js e o banco de dados MongoDB",
-  "homepage": "https://github.com/thiagogm/sticknotes#readme",
-  "bugs": {
-    "url": "https://github.com/thiagogm/sticknotes/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/thiagogm/sticknotes.git"
-  },
-  "license": "MIT",
-  "author": "Thiago Moura",
-  "type": "commonjs",
+  "description": "Projeto de notas autoadesivas (estilo post-it) usando o framewrok Electron e o banco de dados MongoDB",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/professorjosedeassis/sticknotes.git"
+  },
+  "author": "Professor José de Assis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/professorjosedeassis/sticknotes/issues"
+  },
+  "homepage": "https://github.com/professorjosedeassis/sticknotes#readme",
   "devDependencies": {
     "electron": "^34.3.0"
+  },
+  "dependencies": {
+    "mongoose": "^8.12.1"
   }
 }
