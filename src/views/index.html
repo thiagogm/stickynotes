@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+<!--DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Impedir a execução de scripts externos -->
+    < Impedir a execução de scripts externos >
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
-    <!-- Título da janela -->
+    < Título da janela >
     <title>Sticky Notes</title>
-    <!-- Bootstrap -->
-    <!--link rel="stylesheet" href="../public/css/bootstrap.min.css"-->
-    <!-- CSS Personalizado ATENÇÃO!!! sempre após o CSS do bootstrap -->
+    < Bootstrap>
+    <link rel="stylesheet" href="../public/css/bootstrap.min.css">
+    < CSS Personalizado ATENÇÃO!!! sempre após o CSS do bootstrap >
     <link rel="stylesheet" href="../public/css/style.css">
 </head>
 
@@ -25,12 +25,195 @@
         <img src="../public/img/dboff.png" alt="icone banco de dados" id="iconeDB">
     </footer>
 
-    <!-- Bootstrap -->
-    <!--script src="../public/js/bootstrap.min.js"></script-->
+    < Bootstrap>
+    <script src="../public/js/bootstrap.min.js"></script>
 
-    <!-- Processo de renderização -->
+    < Processo de renderização >
     <script src="renderer.js"></script>
     <script src="rendererSobre.js"></script>
 </body>
 
+</html>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+  <title>Sticky Notes</title>
+  <!Bootstrap CSS via CDN -->
+
+  <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+  <title>Cadastro de Clientes</title>
+  <link rel="stylesheet" href="../public/css/bootstrap.min.css"> <!-- Baixe e coloque em public/css -->
+  <link rel="stylesheet" href="../public/css/style.css">
+  <style>
+    body, html { height: 100%; margin: 0; overflow: hidden; background-color: #d3d4d5; }
+    .container { height: calc(100% - 60px); display: flex; align-items: center; justify-content: center; padding: 10px; }
+    .form-container { max-width: 900px; width: 100%; padding: 15px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+    .form-container h1 { font-size: 1.5rem; margin-bottom: 15px; color: #212529; }
+    .form-group { margin-bottom: 10px; }
+    .form-label { font-size: 0.9rem; margin-bottom: 2px; color: #212529; font-weight: 500; }
+    .form-control, .form-select { font-size: 0.9rem; padding: 5px; height: 35px; color: #212529; background-color: #fff; border: 1px solid #495057; }
+    .form-control:focus, .form-select:focus { border-color: #007bff; box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); }
+    .btn { font-size: 0.9rem; padding: 6px 12px; }
+    footer { height: 60px; padding: 10px; position: fixed; bottom: 0; width: 100%; background-color: #e9ecef; display: flex; justify-content: space-between; border-top: 1px solid #dee2e6; }
+    footer p { font-size: 1rem; margin: 5px 0 0 5px; color: #212529; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-container">
+      <h1 class="text-center">Cadastro de Clientes</h1>
+      <form id="cadastroForm" class="needs-validation" novalidate>
+        <!-- Campos do formulário (mantidos como no último código) -->
+        <div class="row g-2">
+          <div class="col-md-6 form-group">
+            <label for="nomeCompleto" class="form-label">Nome Completo <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" required>
+            <div class="invalid-feedback">Nome completo é obrigatório.</div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="nomePreferencial" class="form-label">Nome Preferencial</label>
+            <input type="text" class="form-control" id="nomePreferencial" name="nomePreferencial">
+          </div>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-4 form-group">
+            <label for="dataNascimento" class="form-label">Data Nascimento <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="dataNascimento" name="dataNascimento" required>
+            <div class="invalid-feedback">Data é obrigatória.</div>
+          </div>
+          <div class="col-md-4 form-group">
+            <label for="genero" class="form-label">Gênero</label>
+            <select class="form-select" id="genero" name="genero">
+              <option value="">Prefiro não informar</option>
+              <option value="masculino">Masculino</option>
+              <option value="feminino">Feminino</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="col-md-4 form-group">
+            <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="cpf" name="cpf" required pattern="\d{3}\.\d{3}\.\d{3}-\d{2}">
+            <div class="invalid-feedback">CPF inválido (ex.: 123.456.789-00).</div>
+          </div>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-6 form-group">
+            <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            <div class="invalid-feedback">E-mail inválido.</div>
+          </div>
+          <div class="col-md-3 form-group">
+            <label for="telefoneCelular" class="form-label">Celular <span class="text-danger">*</span></label>
+            <input type="tel" class="form-control" id="telefoneCelular" name="telefoneCelular" required pattern="\(\d{2}\)\s\d{5}-\d{4}">
+            <div class="invalid-feedback">Ex.: (11) 98765-4321</div>
+          </div>
+          <div class="col-md-3 form-group">
+            <label for="telefoneFixo" class="form-label">Fixo</label>
+            <input type="tel" class="form-control" id="telefoneFixo" name="telefoneFixo" pattern="\(\d{2}\)\s\d{4}-\d{4}">
+            <div class="invalid-feedback">Ex.: (11) 1234-5678</div>
+          </div>
+        </div>
+        <div class="row g-2">
+            <div class="col-md-3 form-group">
+                <label for="cep" class="form-label">CEP <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="cep" name="cep" required pattern="\d{5}-\d{3}">
+                <div class="invalid-feedback">Ex.: 12345-678</div>
+              </div>
+          <div class="col-md-6 form-group">
+            <label for="logradouro" class="form-label">Logradouro <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="logradouro" name="logradouro" required>
+            <div class="invalid-feedback">Logradouro é obrigatório.</div>
+          </div>
+          <div class="col-md-3 form-group">
+            <label for="numero" class="form-label">Número <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="numero" name="numero" required>
+            <div class="invalid-feedback">Número é obrigatório.</div>
+          </div>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-4 form-group">
+            <label for="complemento" class="form-label">Complemento</label>
+            <input type="text" class="form-control" id="complemento" name="complemento">
+          </div>
+          <div class="col-md-4 form-group">
+            <label for="bairro" class="form-label">Bairro <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="bairro" name="bairro" required>
+            <div class="invalid-feedback">Bairro é obrigatório.</div>
+          </div>
+          <div class="col-md-2 form-group">
+            <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+            <select class="form-select" id="estado" name="estado" required>
+              <option value="">Selecione</option>
+              <option value="AC">AC</option>
+              <option value="AL">AL</option>
+              <option value="AP">AP</option>
+              <option value="AM">AM</option>
+              <option value="BA">BA</option>
+              <option value="CE">CE</option>
+              <option value="DF">DF</option>
+              <option value="ES">ES</option>
+              <option value="GO">GO</option>
+              <option value="MA">MA</option>
+              <option value="MT">MT</option>
+              <option value="MS">MS</option>
+              <option value="MG">MG</option>
+              <option value="PA">PA</option>
+              <option value="PB">PB</option>
+              <option value="PR">PR</option>
+              <option value="PE">PE</option>
+              <option value="PI">PI</option>
+              <option value="RJ">RJ</option>
+              <option value="RN">RN</option>
+              <option value="RS">RS</option>
+              <option value="RO">RO</option>
+              <option value="RR">RR</option>
+              <option value="SC">SC</option>
+              <option value="SP">SP</option>
+              <option value="SE">SE</option>
+              <option value="TO">TO</option>
+            </select>
+            <div class="invalid-feedback">Estado é obrigatório.</div>
+          </div>
+          <div class="col-md-2 form-group">
+            <label for="cidade" class="form-label">Cidade <span class="text-danger">*</span></label>
+            <select class="form-select" id="cidade" name="cidade" required>
+              <option value="">Selecione</option>
+            </select>
+            <div class="invalid-feedback">Cidade é obrigatória.</div>
+          </div>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-4 form-group">
+            <label for="cpfRemover" class="form-label">CPF para Remover</label>
+            <input type="text" class="form-control" id="cpfRemover" name="cpfRemover" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}">
+            <div class="invalid-feedback">Ex.: 123.456.789-00</div>
+          </div>
+          <div class="col-md-8 form-group d-flex justify-content-end gap-2 mt-3">
+            <button type="submit" class="btn btn-success">Adicionar</button>
+            <button type="button" id="btnSalvar" class="btn btn-primary">Salvar</button>
+            <button type="button" id="btnRemover" class="btn btn-danger">Remover</button>
+            <button type="button" id="btnLimpar" class="btn btn-secondary">Limpar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p id="dataAtual"></p>
+    <img src="../public/img/dboff.png" alt="icone banco de dados" id="iconeDB">
+  </footer>
+
+  <script src="../public/js/bootstrap.bundle.min.js"></script> <!-- Baixe e coloque em public/js -->
+  <script src="renderer.js"></script>
+</body>
 </html>

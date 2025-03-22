@@ -1,6 +1,6 @@
 /**
  * preload.js - Usado no framework electron para aumentar a segurança e o desempenho
- */
+ /
 
 // importação dos recursos do framework electron
 // ipcRenderer permite estabelecer uma comunicação entre processos (IPC) main.js <=> renderer.js
@@ -18,3 +18,21 @@ contextBridge.exposeInMainWorld('api', {
     aboutExit: () => ipcRenderer.send('about-exit')
 })
 
+*/
+// preload.js correto
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('api', {
+  dbStatus: (callback) => ipcRenderer.on('db-status', callback),
+  aboutExit: () => ipcRenderer.send('about-exit'),
+  saveClient: (data) => ipcRenderer.send('save-client', data),
+  saveClientResponse: (callback) => ipcRenderer.on('save-client-response', callback),
+  removeClient: (cpf) => ipcRenderer.send('remove-client', cpf),
+  removeClientResponse: (callback) => ipcRenderer.on('remove-client-response', callback),
+  // Adicionando métodos para atualização
+  updateClient: (data) => ipcRenderer.send('update-client', data),
+  updateClientResponse: (callback) => ipcRenderer.on('update-client-response', callback),
+});
+
+// Iniciar conexão
+ipcRenderer.send('db-connect');

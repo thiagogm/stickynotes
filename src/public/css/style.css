@@ -140,6 +140,7 @@ footer p {
             border-radius: 5px;
         }
 
-
-            
-            
+        #btnSalvar, #btnRemover, #btnLimpar {
+            display: inline-block !important; /* Força a exibição dos botões */
+            background-color: red !important; /* Cor de destaque para debug */
+          }

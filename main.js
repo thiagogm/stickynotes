@@ -1,4 +1,4 @@
-console.log("Electron - Processo principal")
+//console.log("Electron - Processo principal")
 
 // importação dos recursos do framework
 // app (aplicação)
@@ -7,17 +7,17 @@ console.log("Electron - Processo principal")
 // Menu (definir um menu personalizado)
 // shell (acessar links externos no navegador padrão)
 // ipcMain (permite estabelecer uma comunicação entre processos (IPC) main.js <=> renderer.js)
-const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron/main')
+//const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron/main')
 
 // Ativação do preload.js (importação do path)
-const path = require('node:path')
+//const path = require('node:path')
 
 // Importação dos métodos conectar e desconectar (módulo de conexão)
-const { conectar, desconectar } = require('./database.js')
+//const { conectar, desconectar } = require('./database.js')
 
 // Janela principal
-let win
-const createWindow = () => {
+//let win
+/*const createWindow = () => {
   // definindo o tema da janela claro ou ecuro
   nativeTheme.themeSource = 'light'
   win = new BrowserWindow({
@@ -219,4 +219,175 @@ const template = [
       }
     ]
   }
-]
+] */
+
+  console.log("Electron - Processo principal");
+
+const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron/main');
+const path = require('node:path');
+const { conectar, desconectar, salvarCliente, Cliente } = require('./database.js');
+
+let win;
+const createWindow = () => {
+  nativeTheme.themeSource = 'light';
+ // Em main.js, verifique se o caminho para o preload.js está correto
+win = new BrowserWindow({
+  width: 1010,
+  height: 720,
+  webPreferences: {
+    preload: path.join(__dirname, './preload.js'), // Certifique-se de que este caminho está correto
+    nodeIntegration: false,
+    contextIsolation: true,
+    enableRemoteModule: false
+  },
+});
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  win.loadFile('./src/views/index.html');
+};
+
+// Janela Sobre
+let about;
+function aboutWindow() {
+  nativeTheme.themeSource = 'light';
+  const mainWindow = BrowserWindow.getFocusedWindow();
+  if (mainWindow) {
+    about = new BrowserWindow({
+      width: 300,
+      height: 200,
+      autoHideMenuBar: true,
+      resizable: false,
+      minimizable: false,
+      parent: mainWindow,
+      modal: true,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'), // Ajuste para 'src/preload.js' se necessário
+      },
+    });
+    about.loadFile('./src/views/sobre.html');
+  }
+
+  ipcMain.on('about-exit', () => {
+    if (about && !about.isDestroyed()) about.close();
+  });
+}
+
+// Listener para salvar cliente
+ipcMain.on('save-client', async (event, data) => {
+  const conectado = await conectar();
+  if (conectado) {
+    try {
+      await salvarCliente(data);
+      event.reply('save-client-response', { success: true, message: 'Cliente cadastrado com sucesso!' });
+    } catch (error) {
+      let errorMessage = 'Erro ao cadastrar cliente.';
+      if (error.code === 11000) {
+        errorMessage = 'CPF ou e-mail já cadastrado.';
+      }
+      event.reply('save-client-response', { success: false, message: errorMessage });
+    }
+  } else {
+    event.reply('save-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
+  }
+});
+
+// Listener para remover cliente
+ipcMain.on('remove-client', async (event, cpf) => {
+  const conectado = await conectar();
+  if (conectado) {
+    try {
+      const result = await Cliente.deleteOne({ cpf });
+      if (result.deletedCount > 0) {
+        event.reply('remove-client-response', { success: true, message: 'Cliente removido com sucesso!' });
+      } else {
+        event.reply('remove-client-response', { success: false, message: 'Cliente não encontrado.' });
+      }
+    } catch (error) {
+      console.error('Erro ao remover cliente:', error);
+      event.reply('remove-client-response', { success: false, message: 'Erro ao remover cliente.' });
+    }
+  } else {
+    event.reply('remove-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
+  }
+});
+
+// Listener para atualizar cliente
+ipcMain.on('update-client', async (event, data) => {
+  const conectado = await conectar();
+  if (conectado) {
+    try {
+      const result = await Cliente.updateOne({ cpf: data.cpf }, data);
+      if (result.modifiedCount > 0) {
+        event.reply('update-client-response', { success: true, message: 'Cliente atualizado com sucesso!' });
+      } else {
+        event.reply('update-client-response', { success: false, message: 'Cliente não encontrado.' });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar cliente:', error);
+      event.reply('update-client-response', { success: false, message: 'Erro ao atualizar cliente.' });
+    }
+  } else {
+    event.reply('update-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
+  }
+});
+
+// Template do menu
+const template = [
+  {
+    label: 'Cadastro',
+    submenu: [
+      { label: 'Sair', accelerator: 'Alt+F4', click: () => app.quit() },
+    ],
+  },
+  {
+    label: 'Relatório',
+    submenu: [
+      { label: 'Clientes' }, // Pode adicionar funcionalidade futura aqui
+    ],
+  },
+  {
+    label: 'Ferramentas',
+    submenu: [
+      { label: 'Aplicar zoom', role: 'zoomIn' },
+      { label: 'Reduzir', role: 'zoomOut' },
+      { label: 'Restaurar o zoom padrão', role: 'resetZoom' },
+      { type: 'separator' },
+      { label: 'Recarregar', role: 'reload' },
+      { label: 'DevTools', role: 'toggleDevTools' },
+    ],
+  },
+  {
+    label: 'Ajuda',
+    submenu: [
+      { label: 'Repositório', click: () => shell.openExternal('https://github.com/thiagogm/stickynotes') },
+      { label: 'Sobre', click: () => aboutWindow() },
+    ],
+  },
+];
+
+// Inicialização da aplicação
+app.whenReady().then(() => {
+  createWindow();
+
+  ipcMain.on('db-connect', async (event) => {
+    const conectado = await conectar();
+    if (conectado) {
+      setTimeout(() => {
+        event.reply('db-status', 'conectado');
+      }, 500);
+    }
+  });
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('before-quit', async () => {
+  await desconectar();
+});
+
+app.commandLine.appendSwitch('log-level', '3');
