@@ -227,6 +227,10 @@ const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('elect
 const path = require('node:path');
 const { conectar, desconectar, salvarCliente, Cliente } = require('./database.js');
 
+//importação do modelo de dados (Notes.js)
+const noteModel = require('./src/models/Notes.js');
+
+// Janela principal
 let win;
 const createWindow = () => {
   nativeTheme.themeSource = 'light';
@@ -271,6 +275,33 @@ function aboutWindow() {
   });
 }
 
+// janela notas
+let note
+function noteWindow() {
+  nativeTheme.themeSource = 'light'
+  // obter a janela principal
+  const mainWindow = BrowserWindow.getFocusedWindow()
+  // validação (se existir a janela principal)
+  if (mainWindow) {
+    note = new BrowserWindow({
+      width: 400,
+      height: 270,
+      autoHideMenuBar: true,
+      //*resizable: false,
+      //*minimizable: false,
+      // estabelecer uma relação hierárquica entre janelas
+      parent: mainWindow,
+      // criar uma janela modal (só retorna a principal quando encerrada)
+      modal: true,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js')
+      }
+    })
+  }
+
+  note.loadFile('./src/views/notas.html')
+
+}
 // Listener para salvar cliente
 ipcMain.on('save-client', async (event, data) => {
   const conectado = await conectar();
@@ -332,6 +363,18 @@ ipcMain.on('update-client', async (event, data) => {
 
 // Template do menu
 const template = [
+
+    {
+        label: 'Notas',
+        submenu: [
+            {
+                label: 'Criar nota',
+                accelerator: 'Ctrl+N',
+                click: () => noteWindow()
+            }
+        ]
+    },
+
   {
     label: 'Cadastro',
     submenu: [
@@ -368,14 +411,17 @@ const template = [
 app.whenReady().then(() => {
   createWindow();
 
-  ipcMain.on('db-connect', async (event) => {
+// conexão com o banco
+ipcMain.on('request-db-status', async (event) => {
+  try {
     const conectado = await conectar();
-    if (conectado) {
-      setTimeout(() => {
-        event.reply('db-status', 'conectado');
-      }, 500);
-    }
-  });
+    //console.log('Status da conexão:', conectado);
+   // event.reply('db-status', conectado ? 'conectado' : 'desconectado');
+  } catch (error) {
+    console.error('Erro na conexão:', error);
+    //event.reply('db-status', 'erro');
+  }
+});
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -391,3 +437,26 @@ app.on('before-quit', async () => {
 });
 
 app.commandLine.appendSwitch('log-level', '3');
+
+ //======================================================================
+  //===CRUD Create =======================================================
+
+ 
+//Recebimento do objeto que contem os dados da nota
+ipcMain.on('create-note', (event, stickyNote) => {
+//IMPORTANTE! Teste de recebimento do objeto - Passo 2
+  console.log(stickyNote)
+  //Criar uma nova estrutura e dados para salvar no banco de dados
+  //Atenção! Os atributos da estrutura precisam ser identicos ao modelo e os valores são obtidos através do objeto stickyNote
+  const newNote = noteModel ({
+    texto: stickyNote.textNote,
+    cor: stickyNote.colorNote,
+  })
+  //Salvar no MongoDB
+  newNote.save()
+  
+})
+
+
+  //==Fim - CRUD Create ==================================================
+  //======================================================================
