@@ -221,242 +221,184 @@ const template = [
   }
 ] */
 
-  console.log("Electron - Processo principal");
-
-const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron/main');
-const path = require('node:path');
-const { conectar, desconectar, salvarCliente, Cliente } = require('./database.js');
-
-//importação do modelo de dados (Notes.js)
-const noteModel = require('./src/models/Notes.js');
-
-// Janela principal
-let win;
-const createWindow = () => {
-  nativeTheme.themeSource = 'light';
- // Em main.js, verifique se o caminho para o preload.js está correto
-win = new BrowserWindow({
-  width: 1010,
-  height: 720,
-  webPreferences: {
-    preload: path.join(__dirname, './preload.js'), // Certifique-se de que este caminho está correto
-    nodeIntegration: false,
-    contextIsolation: true,
-    enableRemoteModule: false
-  },
-});
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-  win.loadFile('./src/views/index.html');
-};
-
-// Janela Sobre
-let about;
-function aboutWindow() {
-  nativeTheme.themeSource = 'light';
-  const mainWindow = BrowserWindow.getFocusedWindow();
-  if (mainWindow) {
-    about = new BrowserWindow({
-      width: 300,
-      height: 200,
-      autoHideMenuBar: true,
-      resizable: false,
-      minimizable: false,
-      parent: mainWindow,
-      modal: true,
+  const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron');
+  const path = require('path');
+  const { conectar, desconectar, salvarCliente, Cliente } = require('./database.js');
+  
+  let win;
+  let cadastroWindow;
+  
+  const createWindow = () => {
+    nativeTheme.themeSource = 'light';
+    win = new BrowserWindow({
+      width: 1010,
+      height: 720,
       webPreferences: {
-        preload: path.join(__dirname, 'preload.js'), // Ajuste para 'src/preload.js' se necessário
+        preload: path.join(__dirname, 'preload.js'),
+        nodeIntegration: false,
+        contextIsolation: true,
+        enableRemoteModule: false,
       },
     });
-    about.loadFile('./src/views/sobre.html');
-  }
-
-  ipcMain.on('about-exit', () => {
-    if (about && !about.isDestroyed()) about.close();
-  });
-}
-
-// janela notas
-let note
-function noteWindow() {
-  nativeTheme.themeSource = 'light'
-  // obter a janela principal
-  const mainWindow = BrowserWindow.getFocusedWindow()
-  // validação (se existir a janela principal)
-  if (mainWindow) {
-    note = new BrowserWindow({
-      width: 400,
-      height: 270,
-      autoHideMenuBar: true,
-      //*resizable: false,
-      //*minimizable: false,
-      // estabelecer uma relação hierárquica entre janelas
-      parent: mainWindow,
-      // criar uma janela modal (só retorna a principal quando encerrada)
-      modal: true,
-      webPreferences: {
-        preload: path.join(__dirname, 'preload.js')
-      }
-    })
-  }
-
-  note.loadFile('./src/views/notas.html')
-
-}
-// Listener para salvar cliente
-ipcMain.on('save-client', async (event, data) => {
-  const conectado = await conectar();
-  if (conectado) {
-    try {
-      await salvarCliente(data);
-      event.reply('save-client-response', { success: true, message: 'Cliente cadastrado com sucesso!' });
-    } catch (error) {
-      let errorMessage = 'Erro ao cadastrar cliente.';
-      if (error.code === 11000) {
-        errorMessage = 'CPF ou e-mail já cadastrado.';
-      }
-      event.reply('save-client-response', { success: false, message: errorMessage });
-    }
-  } else {
-    event.reply('save-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
-  }
-});
-
-// Listener para remover cliente
-ipcMain.on('remove-client', async (event, cpf) => {
-  const conectado = await conectar();
-  if (conectado) {
-    try {
-      const result = await Cliente.deleteOne({ cpf });
-      if (result.deletedCount > 0) {
-        event.reply('remove-client-response', { success: true, message: 'Cliente removido com sucesso!' });
-      } else {
-        event.reply('remove-client-response', { success: false, message: 'Cliente não encontrado.' });
-      }
-    } catch (error) {
-      console.error('Erro ao remover cliente:', error);
-      event.reply('remove-client-response', { success: false, message: 'Erro ao remover cliente.' });
-    }
-  } else {
-    event.reply('remove-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
-  }
-});
-
-// Listener para atualizar cliente
-ipcMain.on('update-client', async (event, data) => {
-  const conectado = await conectar();
-  if (conectado) {
-    try {
-      const result = await Cliente.updateOne({ cpf: data.cpf }, data);
-      if (result.modifiedCount > 0) {
-        event.reply('update-client-response', { success: true, message: 'Cliente atualizado com sucesso!' });
-      } else {
-        event.reply('update-client-response', { success: false, message: 'Cliente não encontrado.' });
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar cliente:', error);
-      event.reply('update-client-response', { success: false, message: 'Erro ao atualizar cliente.' });
-    }
-  } else {
-    event.reply('update-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
-  }
-});
-
-// Template do menu
-const template = [
-
-    {
-        label: 'Notas',
-        submenu: [
-            {
-                label: 'Criar nota',
-                accelerator: 'Ctrl+N',
-                click: () => noteWindow()
-            }
-        ]
-    },
-
-  {
-    label: 'Cadastro',
-    submenu: [
-      { label: 'Sair', accelerator: 'Alt+F4', click: () => app.quit() },
-    ],
-  },
-  {
-    label: 'Relatório',
-    submenu: [
-      { label: 'Clientes' }, // Pode adicionar funcionalidade futura aqui
-    ],
-  },
-  {
-    label: 'Ferramentas',
-    submenu: [
-      { label: 'Aplicar zoom', role: 'zoomIn' },
-      { label: 'Reduzir', role: 'zoomOut' },
-      { label: 'Restaurar o zoom padrão', role: 'resetZoom' },
-      { type: 'separator' },
-      { label: 'Recarregar', role: 'reload' },
-      { label: 'DevTools', role: 'toggleDevTools' },
-    ],
-  },
-  {
-    label: 'Ajuda',
-    submenu: [
-      { label: 'Repositório', click: () => shell.openExternal('https://github.com/thiagogm/stickynotes') },
-      { label: 'Sobre', click: () => aboutWindow() },
-    ],
-  },
-];
-
-// Inicialização da aplicação
-app.whenReady().then(() => {
-  createWindow();
-
-// conexão com o banco
-ipcMain.on('request-db-status', async (event) => {
-  try {
-    const conectado = await conectar();
-    //console.log('Status da conexão:', conectado);
-   // event.reply('db-status', conectado ? 'conectado' : 'desconectado');
-  } catch (error) {
-    console.error('Erro na conexão:', error);
-    //event.reply('db-status', 'erro');
-  }
-});
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('before-quit', async () => {
-  await desconectar();
-});
-
-app.commandLine.appendSwitch('log-level', '3');
-
- //======================================================================
-  //===CRUD Create =======================================================
-
- 
-//Recebimento do objeto que contem os dados da nota
-ipcMain.on('create-note', (event, stickyNote) => {
-//IMPORTANTE! Teste de recebimento do objeto - Passo 2
-  console.log(stickyNote)
-  //Criar uma nova estrutura e dados para salvar no banco de dados
-  //Atenção! Os atributos da estrutura precisam ser identicos ao modelo e os valores são obtidos através do objeto stickyNote
-  const newNote = noteModel ({
-    texto: stickyNote.textNote,
-    cor: stickyNote.colorNote,
-  })
-  //Salvar no MongoDB
-  newNote.save()
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+    win.loadFile(path.join(__dirname, 'src/views/main.html')); // Carrega main.html como tela inicial
+  };
   
-})
-
-
-  //==Fim - CRUD Create ==================================================
-  //======================================================================
+  // Função para abrir a janela de cadastro
+  function openCadastroWindow() {
+    if (!cadastroWindow || cadastroWindow.isDestroyed()) {
+      nativeTheme.themeSource = 'light';
+      cadastroWindow = new BrowserWindow({
+        width: 1010,
+        height: 720,
+        parent: win, // Define como modal da janela principal
+        modal: true,
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+          nodeIntegration: false,
+          contextIsolation: true,
+          enableRemoteModule: false,
+        },
+      });
+      cadastroWindow.loadFile(path.join(__dirname, 'src/views/index.html'));
+      cadastroWindow.on('closed', () => {
+        cadastroWindow = null; // Limpa a referência ao fechar
+      });
+    } else {
+      cadastroWindow.focus(); // Foca na janela se já estiver aberta
+    }
+  }
+  
+  // Janela Sobre
+  let about;
+  function aboutWindow() {
+    nativeTheme.themeSource = 'light';
+    const mainWindow = BrowserWindow.getFocusedWindow();
+    if (mainWindow) {
+      about = new BrowserWindow({
+        width: 300,
+        height: 200,
+        autoHideMenuBar: true,
+        resizable: false,
+        minimizable: false,
+        parent: mainWindow,
+        modal: true,
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+        },
+      });
+      about.loadFile('./src/views/sobre.html');
+    }
+    ipcMain.on('about-exit', () => {
+      if (about && !about.isDestroyed()) about.close();
+    });
+  }
+  
+  // Janela Notas
+  let note;
+  function noteWindow() {
+    nativeTheme.themeSource = 'light';
+    const mainWindow = BrowserWindow.getFocusedWindow();
+    if (mainWindow) {
+      note = new BrowserWindow({
+        width: 400,
+        height: 270,
+        autoHideMenuBar: true,
+        parent: mainWindow,
+        modal: true,
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+        },
+      });
+      note.loadFile('./src/views/notas.html');
+    }
+  }
+  
+  // Listener para salvar cliente
+  ipcMain.on('save-client', async (event, data) => {
+    const conectado = await conectar();
+    if (conectado) {
+      try {
+        await salvarCliente(data);
+        event.reply('save-client-response', { success: true, message: 'Cliente cadastrado com sucesso!' });
+      } catch (error) {
+        let errorMessage = 'Erro ao cadastrar cliente.';
+        if (error.code === 11000) errorMessage = 'CPF ou e-mail já cadastrado.';
+        event.reply('save-client-response', { success: false, message: errorMessage });
+      }
+    } else {
+      event.reply('save-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
+    }
+  });
+  
+  // Conexão com o banco
+  ipcMain.on('request-db-status', async (event) => {
+    try {
+      const conectado = await conectar();
+      event.reply('db-status', conectado ? 'conectado' : 'desconectado');
+    } catch (error) {
+      console.error('Erro na conexão:', error);
+      event.reply('db-status', 'desconectado');
+    }
+  });
+  
+  // Template do menu
+  const template = [
+    {
+      label: 'Notas',
+      submenu: [
+        { label: 'Criar nota', accelerator: 'Ctrl+N', click: () => noteWindow() },
+      ],
+    },
+    {
+      label: 'Cadastro',
+      submenu: [
+        { label: 'Abrir Cadastro', accelerator: 'Ctrl+C', click: () => openCadastroWindow() }, // Abre o cadastro
+        { type: 'separator' },
+        { label: 'Sair', accelerator: 'Alt+F4', click: () => app.quit() },
+      ],
+    },
+    {
+      label: 'Relatório',
+      submenu: [
+        { label: 'Clientes' },
+      ],
+    },
+    {
+      label: 'Ferramentas',
+      submenu: [
+        { label: 'Aplicar zoom', role: 'zoomIn' },
+        { label: 'Reduzir', role: 'zoomOut' },
+        { label: 'Restaurar o zoom padrão', role: 'resetZoom' },
+        { type: 'separator' },
+        { label: 'Recarregar', role: 'reload' },
+        { label: 'DevTools', role: 'toggleDevTools' },
+      ],
+    },
+    {
+      label: 'Ajuda',
+      submenu: [
+        { label: 'Repositório', click: () => shell.openExternal('https://github.com/thiagogm/stickynotes') },
+        { label: 'Sobre', click: () => aboutWindow() },
+      ],
+    },
+  ];
+  
+  // Inicialização da aplicação
+  app.whenReady().then(() => {
+    createWindow();
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+  });
+  
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+  });
+  
+  app.on('before-quit', async () => {
+    await desconectar();
+  });
+  
+  app.commandLine.appendSwitch('log-level', '3');
+  

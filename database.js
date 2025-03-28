@@ -2,12 +2,11 @@
  * Módulo de conexão com o banco de dados
  * Uso do framework mongoose
  */
-
 const mongoose = require('mongoose');
 
 // Configuração do banco de dados
 const url = 'mongodb+srv://admin:123Senac@cluster0.woskp.mongodb.net/dbnotes';
-let conectado = false;
+let conn = null; // Variável para armazenar a conexão ativa
 
 // Schema para o cliente
 const clienteSchema = new mongoose.Schema({
@@ -33,33 +32,31 @@ const Cliente = mongoose.model('Cliente', clienteSchema);
 
 // Método para conectar com o banco de dados
 const conectar = async () => {
-  if (!conectado) {
-    try {
-      await mongoose.connect(url);
-      conectado = true;
-      console.log("MongoDB conectado");
-      return true;
-    } catch (error) {
-      console.log("Erro ao conectar:", error);
-      return false;
-    }
+  if (conn) return true; // Já conectado
+  try {
+    conn = await mongoose.connect(url); // Removidas opções depreciadas
+    console.log("MongoDB conectado");
+    return true;
+  } catch (error) {
+    console.error("Erro ao conectar ao MongoDB:", error);
+    return false;
   }
-  return true; // Já conectado
 };
 
 // Método para desconectar do banco de dados
 const desconectar = async () => {
-  if (conectado) {
+  if (conn) {
     try {
       await mongoose.disconnect();
-      conectado = false;
+      conn = null;
       console.log("MongoDB desconectado");
       return true;
     } catch (error) {
-      console.log("Erro ao desconectar:", error);
+      console.error("Erro ao desconectar do MongoDB:", error);
       return false;
     }
   }
+  return true; // Já desconectado
 };
 
 // Método para salvar cliente

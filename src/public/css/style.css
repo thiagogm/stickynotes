@@ -1,12 +1,12 @@
 @charset "UTF-8";
 
-/** importação de fonts off-line **/
+/* Importação de fontes off-line */
 @font-face {
     font-family: "Fredoka";
-    src: url("../Fredoka/Fredoka-VariableFont_wdth\,wght.ttf");
+    src: url("../Fredoka/Fredoka-VariableFont_wdth,wght.ttf");
 }
 
-/* variáveis para as cores das notas */
+/* Variáveis para cores */
 :root {
     --amarelo: #fff68f;
     --azul: #add8e6;
@@ -14,7 +14,10 @@
     --rosa: #ffb6c1;
     --laranja: #ffa07a;
     --cinza: #6c757d;
-    --footer: #f3f3f3;    
+    --footer: #f3f3f3;
+    --texto-escuro: #333;
+    --texto-medio: #34495e;
+    --texto-claro: #7f8c8d;
 }
 
 /* CSS Reset */
@@ -25,122 +28,220 @@
     box-sizing: border-box;
 }
 
+/* Estilos gerais */
 body {
-    font-family: "Fredoka";
+    font-family: "Fredoka", sans-serif;
     font-size: 1em;
+    background-color: #d3d4d5; /* Cor de fundo do formulário */
 }
 
+/* Container principal */
 .container {
     padding: 15px;
+    height: calc(100vh - 45px); /* Ajusta para o footer fixo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-/*Botões*/
-button {
-    padding: 5px 15px;
-    background-color: var(--cinza);
-    color: var(--azul);
+
+/* Estilos do formulário (index.html) */
+.form-container {
+    max-width: 900px;
+    width: 100%;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h1 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--texto-escuro);
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-label {
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    color: var(--texto-escuro);
+    font-weight: 500;
+}
+
+.form-control, .form-select {
+    font-size: 0.9rem;
+    padding: 5px;
+    height: 35px;
+    color: var(--texto-escuro);
+    background-color: #fff;
     border: 1px solid var(--cinza);
-    border-radius: 5px;
-    cursor: pointer;
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-
+    border-radius: 4px;
 }
 
-/** Rodapé **/
+.form-control:focus, .form-select:focus {
+    border-color: var(--azul);
+    box-shadow: 0 0 5px rgba(173, 216, 230, 0.5);
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.form-control.is-valid {
+    border-color: #28a745;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 2px;
+    display: none;
+}
+
+/* Botões do formulário */
+.form-container .btn {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    margin: 0 5px; /* Espaçamento entre botões */
+    position: static; /* Remove qualquer position: fixed indesejado */
+    border-radius: 4px;
+}
+
+/* Sobrescrever cores padrão do Bootstrap para debug (remova após testar) 
+#btnSalvar {
+    background-color: #007bff !important;
+}
+
+#btnRemover {
+    background-color: #dc3545 !important;
+}
+
+#btnLimpar {
+    background-color: #6c757d !important;
+}*/
+
+/* Footer */
 footer {
     width: 100%;
     height: 45px;
     padding: 5px;
     background-color: var(--footer);
-    display: flex;   
-    justify-content: space-between;    
+    display: flex;
+    justify-content: space-between;
     position: fixed;
     bottom: 0;
+    border-top: 1px solid #dee2e6;
 }
 
-footer p {    
+footer p {
     font-size: 1.1em;
-    margin: 5px 0px 0px 5px;
+    margin: 5px 0 0 5px;
+    color: var(--texto-escuro);
 }
 
-/* Sobre */
-      .sobre-container {
-            max-width: 280px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
-        }
+footer img#iconeDB {
+    height: 30px;
+    margin: 5px 10px 0 0;
+}
 
-        .app-titulo {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #2c3e50;
-        }
+/* Estilos da janela Sobre (sobre.html) */
+.sobre-container {
+    max-width: 280px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    color: var(--texto-escuro);
+}
 
-        .autor {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #34495e;
-        }
+.app-titulo {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--texto-medio);
+}
 
-        .licenca {
-            font-size: 14px;
-            font-weight: 400;
-            margin-bottom: 8px;
-            color: #34495e;
-        }
+.autor {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--texto-medio);
+}
 
-        .versao {
-            font-size: 12px;
-            font-weight: 400;
-            font-style: italic;
-            margin-bottom: 20px;
-            color: #7f8c8d;
-        }
+.licenca {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: var(--texto-medio);
+}
 
-        .btn-ok {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 20px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+.versao {
+    font-size: 12px;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 20px;
+    color: var(--texto-claro);
+}
 
-        .btn-ok:hover {
-            background-color: #2980b9;
-        }
+.btn-ok {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-        .novaNota {
-            display: flex;
-            flex-direction: column;
-        }
+.btn-ok:hover {
+    background-color: #2980b9;
+}
 
-        .novaNota input {
-            width: 355px;
-            padding: 10px;
-            margin: 10px 0px 20px 0px;
-            border: 1px solid var(--cinza);
-            border-radius: 5px;
-        }
+/* Estilos da janela Notas (notas.html) */
+.novaNota {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    height: 100%;
+}
 
-        .novaNota select {
-            margin-top: 10px;
-            width: 150px;
-            padding: 7px;
-            border: 1px solid var(--cinza);
-            border-radius: 5px;
-        }
+.novaNota input {
+    width: 100%;
+    max-width: 355px;
+    padding: 10px;
+    margin: 10px 0 20px 0;
+    border: 1px solid var(--cinza);
+    border-radius: 5px;
+    font-family: "Fredoka", sans-serif;
+    font-size: 1em;
+}
 
-        #btnSalvar, #btnRemover, #btnLimpar {
-            display: inline-block !important; /* Força a exibição dos botões */
-            background-color: red !important; /* Cor de destaque para debug */
-          }
+.novaNota select {
+    width: 150px;
+    padding: 7px;
+    margin: 10px 0;
+    border: 1px solid var(--cinza);
+    border-radius: 5px;
+    font-family: "Fredoka", sans-serif;
+    font-size: 1em;
+}
+
+.novaNota .btn-custom {
+    padding: 5px 15px;
+    background-color: var(--cinza);
+    color: white;
+    border: 1px solid var(--cinza);
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: 10px;
+}
+
+.novaNota .btn-custom:hover {
+    background-color: #ffffff;
+}

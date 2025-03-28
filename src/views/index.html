@@ -51,7 +51,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <title>Cadastro de Clientes</title>
-  <link rel="stylesheet" href="../public/css/bootstrap.min.css"> <!-- Baixe e coloque em public/css -->
+  <link rel="stylesheet" href="../public/css/bootstrap.min.css">
   <link rel="stylesheet" href="../public/css/style.css">
   <style>
     body, html { height: 100%; margin: 0; overflow: hidden; background-color: #d3d4d5; }
@@ -71,8 +71,7 @@
   <div class="container">
     <div class="form-container">
       <h1 class="text-center">Cadastro de Clientes</h1>
-      <form id="cadastroForm" class="needs-validation" novalidate>
-        <!-- Campos do formulário (mantidos como no último código) -->
+      <form id="cadastroForm" class="needs-validation">
         <div class="row g-2">
           <div class="col-md-6 form-group">
             <label for="nomeCompleto" class="form-label">Nome Completo <span class="text-danger">*</span></label>
@@ -123,11 +122,11 @@
           </div>
         </div>
         <div class="row g-2">
-            <div class="col-md-3 form-group">
-                <label for="cep" class="form-label">CEP <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="cep" name="cep" required pattern="\d{5}-\d{3}">
-                <div class="invalid-feedback">Ex.: 12345-678</div>
-              </div>
+          <div class="col-md-3 form-group">
+            <label for="cep" class="form-label">CEP <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="cep" name="cep" required pattern="\d{5}-\d{3}">
+            <div class="invalid-feedback">Ex.: 12345-678</div>
+          </div>
           <div class="col-md-6 form-group">
             <label for="logradouro" class="form-label">Logradouro <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="logradouro" name="logradouro" required>
@@ -192,16 +191,9 @@
           </div>
         </div>
         <div class="row g-2">
-          <div class="col-md-4 form-group">
-            <label for="cpfRemover" class="form-label">CPF para Remover</label>
-            <input type="text" class="form-control" id="cpfRemover" name="cpfRemover" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}">
-            <div class="invalid-feedback">Ex.: 123.456.789-00</div>
-          </div>
           <div class="col-md-8 form-group d-flex justify-content-end gap-2 mt-3">
-            <button type="submit" class="btn btn-success">Adicionar</button>
-            <button type="button" id="btnSalvar" class="btn btn-primary">Salvar</button>
-            <button type="button" id="btnRemover" class="btn btn-danger">Remover</button>
-            <button type="button" id="btnLimpar" class="btn btn-secondary">Limpar</button>
+            <button type="button" id="btnSalvar" class="btn btn-outline-success">Salvar</button>
+            <button type="button" id="btnLimpar" class="btn btn-outline-primary">Limpar</button>
           </div>
         </div>
       </form>
@@ -213,7 +205,181 @@
     <img src="../public/img/dboff.png" alt="icone banco de dados" id="iconeDB">
   </footer>
 
-  <script src="../public/js/bootstrap.bundle.min.js"></script> <!-- Baixe e coloque em public/js -->
-  <script src="renderer.js"></script>
+  <script src="../public/js/bootstrap.bundle.min.js"></script>
+  <script src="../public/js/inputmask.min.js"></script>
+  <script>
+    // Máscaras de entrada
+    Inputmask({"mask": "999.999.999-99"}).mask(document.getElementById("cpf"));
+    Inputmask({"mask": "99999-999"}).mask(document.getElementById("cep"));
+    Inputmask({"mask": "(99) 99999-9999"}).mask(document.getElementById("telefoneCelular"));
+    Inputmask({"mask": "(99) 9999-9999"}).mask(document.getElementById("telefoneFixo"));
+
+    // Validação de CPF
+    function validarCPF(cpf) {
+      cpf = cpf.replace(/[^\d]+/g, '');
+      if (cpf.length !== 11) return false;
+      if (/^(\d)\1+$/.test(cpf)) return false;
+      let soma = 0;
+      let resto;
+      for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+      resto = (soma * 10) % 11;
+      if ((resto === 10) || (resto === 11)) resto = 0;
+      if (resto !== parseInt(cpf.substring(9, 10))) return false;
+      soma = 0;
+      for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+      resto = (soma * 10) % 11;
+      if ((resto === 10) || (resto === 11)) resto = 0;
+      if (resto !== parseInt(cpf.substring(10, 11))) return false;
+      return true;
+    }
+
+    // Consulta CEP via ViaCEP
+    async function consultarCEP(cep) {
+      cep = cep.replace(/\D/g, '');
+      if (cep.length !== 8) return;
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+        if (!data.erro) {
+          document.getElementById('logradouro').value = data.logradouro;
+          document.getElementById('bairro').value = data.bairro;
+          document.getElementById('estado').value = data.uf;
+          await carregarCidades(data.uf);
+          document.getElementById('cidade').value = data.localidade;
+        }
+      } catch (error) {
+        console.error('Erro ao consultar CEP:', error);
+      }
+    }
+
+    // Carregar cidades por estado
+    async function carregarCidades(uf) {
+      try {
+        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+        const cidades = await response.json();
+        const cidadeSelect = document.getElementById('cidade');
+        cidadeSelect.innerHTML = '<option value="">Selecione</option>';
+        cidades.forEach(cidade => {
+          const option = document.createElement('option');
+          option.value = cidade.nome;
+          option.textContent = cidade.nome;
+          cidadeSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Erro ao carregar cidades:', error);
+      }
+    }
+
+    // Validação em tempo real
+    document.querySelectorAll('.form-control, .form-select').forEach(input => {
+      input.addEventListener('input', function() {
+        const feedback = this.nextElementSibling;
+        if (this.id === 'cpf') {
+          const isValid = validarCPF(this.value);
+          this.classList.toggle('is-valid', isValid);
+          this.classList.toggle('is-invalid', !isValid);
+          if (feedback) feedback.style.display = isValid ? 'none' : 'block';
+        } else if (this.id === 'cep') {
+          const isValid = /^\d{5}-\d{3}$/.test(this.value);
+          this.classList.toggle('is-valid', isValid);
+          this.classList.toggle('is-invalid', !isValid);
+          if (feedback) feedback.style.display = isValid ? 'none' : 'block';
+          if (isValid) consultarCEP(this.value);
+        } else if (this.id === 'email') {
+          const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+          this.classList.toggle('is-valid', isValid);
+          this.classList.toggle('is-invalid', !isValid);
+          if (feedback) feedback.style.display = isValid ? 'none' : 'block';
+        } else if (this.required && !this.value.trim()) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+          if (feedback) feedback.style.display = 'block';
+        } else {
+          this.classList.add('is-valid');
+          this.classList.remove('is-invalid');
+          if (feedback) feedback.style.display = 'none';
+        }
+      });
+    });
+
+    // Carregar cidades ao mudar estado
+    document.getElementById('estado').addEventListener('change', function() {
+      if (this.value) {
+        carregarCidades(this.value);
+        this.classList.add('is-valid');
+        this.classList.remove('is-invalid');
+      }
+    });
+
+    // Botão Salvar
+    document.getElementById('btnSalvar').addEventListener('click', () => {
+      const form = document.getElementById('cadastroForm');
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+      }
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      if (window.electronAPI && window.electronAPI.saveClient) {
+        window.electronAPI.saveClient(data);
+      } else {
+        console.error("API do Electron não disponível");
+        alert("Erro: Não foi possível salvar o cliente. Verifique a conexão com o Electron.");
+      }
+    });
+
+    // Botão Limpar
+    document.getElementById('btnLimpar').addEventListener('click', () => {
+      const form = document.getElementById('cadastroForm');
+      form.reset();
+      form.classList.remove('was-validated');
+      document.getElementById('cidade').innerHTML = '<option value="">Selecione</option>';
+    });
+
+    // Resposta do salvamento
+    if (window.electronAPI && window.electronAPI.onSaveClientResponse) {
+      window.electronAPI.onSaveClientResponse((response) => {
+        alert(response.message);
+        if (response.success) {
+          const form = document.getElementById('cadastroForm');
+          form.reset();
+          form.classList.remove('was-validated');
+          document.getElementById('cidade').innerHTML = '<option value="">Selecione</option>';
+        }
+      });
+    } else {
+      console.warn("Electron API não disponível para resposta de salvamento");
+    }
+
+    // Função para atualizar a data e hora com espaço maior
+    function atualizarDataHora() {
+      const dataAtual = document.getElementById('dataAtual');
+      const agora = new Date();
+      const data = agora.toLocaleDateString('pt-BR');
+      const hora = agora.toLocaleTimeString('pt-BR', { hour12: false });
+      dataAtual.textContent = `${data}     ${hora}`; // Cinco espaços entre data e hora
+    }
+
+    // Data atual no footer e status do banco
+    document.addEventListener('DOMContentLoaded', () => {
+      // Define a data e hora inicialmente
+      atualizarDataHora();
+      // Atualiza a cada segundo
+      setInterval(atualizarDataHora, 1000);
+
+      if (window.electronAPI && window.electronAPI.requestDbStatus) {
+        window.electronAPI.requestDbStatus();
+        window.electronAPI.onDbStatus((message) => {
+          const iconeDB = document.getElementById('iconeDB');
+          iconeDB.src = message === 'conectado' ? 
+            window.electronAPI.getImagePath('dbon.png') : 
+            window.electronAPI.getImagePath('dboff.png');
+        });
+      } else {
+        console.warn("Electron API não disponível para status do banco");
+        document.getElementById('iconeDB').src = '../public/img/dboff.png';
+      }
+    });
+  </script>
 </body>
 </html>

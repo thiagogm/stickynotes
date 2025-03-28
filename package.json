@@ -9,18 +9,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/professorjosedeassis/sticknotes.git"
+    "url": "git+https://github.com/thiagogm/stickynotes.git"
   },
-  "author": "Professor José de Assis",
+  "author": "Thiago Moura",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/professorjosedeassis/sticknotes/issues"
+    "url": "https://github.com/thiagogm/stickynotes/issues"
   },
-  "homepage": "https://github.com/professorjosedeassis/sticknotes#readme",
-  "devDependencies": {
-    "electron": "^34.3.0"
-  },
-  "dependencies": {
-    "mongoose": "^8.12.1"
+  "homepage": "https://github.com/thiagogm/stickynotes",
+"dependencies": {
+    "electron": "^23.0.0",
+    "mongoose": "^6.10.0"
   }
 }
