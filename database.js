@@ -5,7 +5,7 @@
 const mongoose = require('mongoose');
 
 // Configuração do banco de dados
-const url = 'mongodb+srv://admin:123Senac@cluster0.woskp.mongodb.net/dbnotes';
+const url = 'mongodb+srv://admin:123Senac@cluster0.woskp.mongodb.net/dbclientes';
 let conn = null; // Variável para armazenar a conexão ativa
 
 // Schema para o cliente

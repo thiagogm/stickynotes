@@ -9,18 +9,6 @@ if (typeof window.api === 'undefined') {
   console.error("API não está definida. Verifique se o preload.js está carregando corretamente.");
 }
 
-/* Inserção da data no rodapé
-function obterData() {
-  const data = new Date();
-  const options = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  };
-  return data.toLocaleDateString('pt-BR', options);
-}*/
-
 document.getElementById('dataAtual').innerHTML = obterData();
 
 // Troca do ícone do banco de dados (status da conexão)
@@ -239,4 +227,7 @@ if (window.api) {
     });
   });
 };
+
+
+
 

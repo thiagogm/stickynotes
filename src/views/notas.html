@@ -1,47 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Impedir a execução de scripts externos -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
-    <!-- Título da janela -->
     <title>Sticky Notes</title>
-    <!-- Bootstrap -->
-    <!--link rel="stylesheet" href="../public/css/bootstrap.min.css"-->
-    <!-- CSS Personalizado ATENÇÃO!!! sempre após o CSS do bootstrap -->
-    <link rel="stylesheet" href="../public/css/style.css">
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --amarelo: #d4a517;
+            --azul: #005a8d;
+            --verde: #207567;
+            --rosa: #b22234;
+            --laranja: #cc5500;
+            --cinza: #5a6268;
+            --bg-color: #f5f5f5;
+            --text-dark: #212529;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #inputNote, #selectColor {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid var(--cinza);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-custom {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--azul);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #004471;
+        }
+    </style>
+</head>
 <body>
     <div class="container">
-        <section class="novaNota"></section>
-            <h1>Nova nota</h1>
-                <form id="frmNote">
-                    <input type="text" placeholder="Escreva sua nota aqui..." required id="inputNote">
-                        <h2>Escolha a cor</h2>
-                     <select  id="selectColor">
-                        <option value="amarelo">amarelo</option>
-                        <option value="azul">azul</option>
-                        <option value="verde">verde</option>
-                        <option value="rosa">rosa</option>
-                        <option value="laranja">laranja</option>
-                    </select>
-               <button type="submit" class="btn btn-primary">Salvar</button>
+        <h1><i class="fa-solid fa-sticky-note"></i> Nova Nota</h1>
+        <form id="frmNote">
+            <input type="text" placeholder="Escreva sua nota aqui..." required id="inputNote" class="form-control mt-3">
+            <h2 class="mt-3" style="font-size: 1.2rem;">Escolha a cor</h2>
+            <select id="selectColor" class="form-select mt-2">
+                <option value="amarelo">Amarelo</option>
+                <option value="azul">Azul</option>
+                <option value="verde">Verde</option>
+                <option value="rosa">Rosa</option>
+                <option value="laranja">Laranja</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-custom mt-3">Salvar</button>
         </form>
-
-
-
     </div>
-
-
-    <!-- Bootstrap -->
-    <!--script src="../public/js/bootstrap.min.js"></script-->
-
-    <!-- Processo de renderização -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="rendererNota.js"></script>
-
 </body>
-
 </html>

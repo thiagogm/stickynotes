@@ -220,8 +220,8 @@ const template = [
     ]
   }
 ] */
-
-  const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron');
+// dialog: módulo electron para ativar caixa de mensagens
+  const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain, dialog} = require('electron');
   const path = require('path');
   const { conectar, desconectar, salvarCliente, Cliente } = require('./database.js');
   
@@ -329,6 +329,30 @@ const template = [
     } else {
       event.reply('save-client-response', { success: false, message: 'Erro ao conectar ao banco de dados.' });
     }
+
+    //Confirmação de cliente adicionado ao banco (uso do dialog)
+  dialog.showMessageBox({
+    // montagem da caixa de mensagem
+    type: 'info',
+    title: "Aviso",
+    message: "Cliente adicionado com sucesso!",
+    buttons: ["OK"]
+
+  }).then((result) => {
+    // se o botão ok for pressionado
+    if(result.response === 0){
+      //enviar um pedido para o renderizador limpar os campos (preload.js)
+      event.reply('reset-form')
+    }
+  })
+  
+
+  //Enviar ao renderizador um pedido para limpar os campos e setaro formulário com os padrões originais (foco no texto)
+  event.reply('reset-form')
+
+
+
+
   });
   
   // Conexão com o banco
@@ -401,4 +425,5 @@ const template = [
   });
   
   app.commandLine.appendSwitch('log-level', '3');
+
   

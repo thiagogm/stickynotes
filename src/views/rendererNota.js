@@ -4,6 +4,8 @@ const foco = document.getElementById('inputNote');
 //Alterar as propriedades do documento html ao iniciar a aplicação
 document.addEventListener('DOMContentLoaded', () => {
     foco.focus(); //iniciar o documento com o foco na caixa de texto
+    btnEditar.disabled = true
+    btnExcluir.disabled = true
   });
 
   //Capturar os dados do formulário (Passo 1: - fluxo)
@@ -40,6 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   
-  
-  
-  
+  //==================================================================================================================
+  //-- Resetar o formulário ==========================================================================================
+
+  api.resetForm((args) => {
+    //recarregar a página
+    location.reload()
+    })
+  //== Fim - Resetar o formulário ====================================================================================
