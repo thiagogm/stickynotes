@@ -17,8 +17,11 @@
     "url": "https://github.com/thiagogm/stickynotes/issues"
   },
   "homepage": "https://github.com/thiagogm/stickynotes",
-"dependencies": {
-    "electron": "^23.0.0",
-    "mongoose": "^6.10.0"
-  }
+  "dependencies": {
+    "mongoose": "^6.13.8"
+  },
+  "devDependencies": {
+    "electron": "^35.1.2"
+  },
+  "keywords": []
 }
